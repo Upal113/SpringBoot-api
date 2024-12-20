@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RestController
@@ -32,35 +33,36 @@ public class RunController {
     public List<Run> findAll() {
         return runRepository.findAll();
     }
-
     @GetMapping("/{id}")
-    public Run findById(@PathVariable int id) {
+    Run findById(@PathVariable Integer id) {
         Optional<Run> run = runRepository.findById(id);
-        if (run.isEmpty()) {
-            throw new RunNotFound();
+        if(run.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Run not found.");
         }
         return run.get();
     }
 
-    //post
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/")
+    @PostMapping
     void create(@Valid @RequestBody Run run) {
         runRepository.create(run);
     }
 
-    //put
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    void update(@Valid @PathVariable Integer id, @RequestBody Run run) {
-        runRepository.update(run, id);
+    void update(@Valid @RequestBody Run run, @PathVariable Integer id) {
+        runRepository.update(run,id);
     }
 
-    //delete
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     void delete(@PathVariable Integer id) {
         runRepository.delete(id);
     }
+
+    List<Run> findByLocation(@RequestParam String location) {
+        return runRepository.findByLocation(location);
+    }
+   
 
 }
